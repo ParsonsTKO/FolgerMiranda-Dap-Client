@@ -1,0 +1,271 @@
+{% extends "DAPClientBundle::base_layout.html.twig" %}
+
+{% if record.images is defined and record.images | length > 0 %}
+  {% set mainImage = record.images | first %}
+  {% set imagesEndpoint = viewSettings.images_endpoint %}
+{% endif %}
+
+
+
+{% block head_metadata %}
+  {{ render(controller("DAPClientBundle:Head:metadata", {"detailMeta" : detailMeta | merge({'og:url':
+  url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params'))|replace({'http://':'https://'})} ) })) }}
+{% endblock %}
+
+{% block head_title %}
+  {% if record is defined and record | length > 0 %}
+    {% if record.title.displayTitle is defined %}
+      {{ render(controller("DAPClientBundle:Head:title", {"viewTitle": record.title.displayTitle})) }}
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{% block header %}
+  {% include 'DAPClientBundle:Header:show.html.twig' only %}
+{% endblock %}
+
+{% block content %}
+  {% if record is defined and record | length > 0 %}
+
+  {% set urlName = "name" %}
+  {% set urlDapID = "id" %}
+  {% if record.title.displayTitle is defined and record.title.displayTitle != "" %}
+    {% set urlName = record.title.displayTitle | replace({ '[': '', ']': '', ':': '', ',': '', '/': '', '.': '', "’": '-',' ': '-' }) | lower %}
+  {% endif %}
+
+  {% if record.dapID != "" %}
+    {% set urlDapID = record.dapID %}
+  {% endif %}
+
+  {% set url = path('dap_client_detail', { 'type': 'detail', 'name': urlName, 'dapID': urlDapID }) %}
+
+  <div class="page-header">
+    <div class="container">
+      <a href="#" class="backToSearchButton" style="display: none;">
+        <svg class="" width="26" height="24" style="float:left;">
+          <use xlink:href="#icon-arrow-left" />
+        </svg> <span style="color: #fff !important">BACK TO SEARCH RESULTS</span>
+      </a>
+    </div>
+      <div class="container">
+      <h1 class="page-header__heading text-center">
+        {% if record.title.displayTitle is defined %}
+          {{ record.title.displayTitle }}
+        {% endif %}
+      </h1>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="container">
+      <div id="page-topbar" class="row">
+        <div class="col-md-12">
+          <div class="page-actions">
+            
+              <div data-myshelf-add-remove="{{ record.dapID }}">
+                <a href="{{ path("dap_myshelf_shelfrecord", { 'dapid': record.dapID, 'redirect': app.request.uri }) }}" class="button is-lspaced is-bare{% if app.user.enabled is defined and app.user.enabled %} add_shelf d-none{% endif %} record-add-myshelf">
+                  <svg class="" width="26" height="24">
+                    <use xlink:href="#icon-add-to-shelf" />
+                  </svg>
+                  ADD TO SHELF
+                </a>
+                <a href="{{ path("dap_myshelf_unshelfrecord", { 'dapid': record.dapID, 'redirect': app.request.uri }) }}" class="button is-lspaced is-bare add_shelf d-none record-remove-myshelf">
+                  <svg class="" width="26" height="24">
+                    <use xlink:href="#icon-add-to-shelf" />
+                  </svg>
+                  REMOVE FROM SHELF
+                </a>              
+              </div>
+            
+            <div>
+              <a href="{{ path("dap_client_download_csv", {"dapID": record.dapID }) }}" class="button is-lspaced is-bare">
+                <svg class="" width="24" height="24">
+                  <use xlink:href="#icon-download"></use>
+                </svg>
+                DOWNLOAD METADATA
+              </a>
+            </div>
+           <div>
+              <a href="#" class="button is-lspaced is-bare" onclick="$('#a2a_shares').toggle();">
+                <svg class="" width="26" height="24">
+                  <use xlink:href="#icon-share" />
+                </svg>
+                SHARE
+              </a>
+            </div>
+            {#<!-- AddToAny START --> #}
+            <div id="a2a_shares" class="a2a_kit a2a_kit_size_32 a2a_default_style" style="margin-top:-3px; display: none;">
+              <a class="a2a_button_facebook"></a>
+              <a class="a2a_button_twitter"></a>
+              <a class="a2a_button_reddit"></a>
+              <a class="a2a_button_pocket"></a>
+            </div>
+            <script>
+                var a2a_config = a2a_config || {};
+                a2a_config.onclick = 1;
+            </script>
+            <script async src="https://static.addtoany.com/menu/page.js"></script>
+            {#<!-- AddToAny END -->#}
+            <div>
+              {% if (record.hasRelatedImages is defined and record.hasRelatedImages) or (record.isImage is defined and
+              record.isImage) %}
+              <a href="{{ path("dap_client_mirador",{ "dapID": record.dapID }) }}" class="button is-lspaced is-bare"
+                target="_blank">
+                <svg class="" width="24" height="24">
+                  <use xlink:href="#icon-iiif" />
+                </svg>
+                OPEN IN MIRADOR
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          <hr>
+        </div>
+      </div>
+      <div id="page-body" class="row">
+        {% if (record.hasRelatedImages is defined and record.hasRelatedImages) or (record.isImage is defined and
+          record.isImage) %}
+          {% include '@DAPClient/Search/detail-content/aside-metadata.html.twig' %}
+          <main class="col-md-9 u-mb-7">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="uv u-mb-12" data-locale="en-GB:English (GB)" data-fullscreen="" data-config="{{ asset('components/uv/config.json') }}"
+                  data-uri="{{viewSettings.manifest_endpoint}}/{{record.dapID}}.json" data-sequenceindex="0" data-canvasindex="0"
+                  data-rotation="0" style="width:100%; height:800px;">
+                </div>
+              </div>
+              <section class="col-md-11 mr-auto">
+                {% include '@DAPClient/Search/detail-content/section-down-metadata.html.twig' %}
+              </section>
+            </div>
+          </main>
+          <script type="text/javascript" id="embedUV" src="{{ asset('components/uv/lib/embed.js') }}"></script>
+        {% elseif (record.isRemoteSystem is defined and record.isRemoteSystem) or (record.remoteSystemUrl is defined and
+          record.remoteSystemUrl is not null) %}
+          {% include '@DAPClient/Search/detail-content/aside-metadata.html.twig' %}
+          <main class="col-md-9">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="u-mb-9 iframe-noembed" data-embed-url="{{ record.remoteSystemUrl.url|raw }}">
+                </div>
+              </div>
+              <section class="col-md-11 mr-auto">
+                {% include '@DAPClient/Search/detail-content/section-down-metadata.html.twig' %}
+              </section>
+            </div>
+          </main>
+        {% elseif record.binaryFileUrl.url is defined and record.binaryFileUrl.url is not null and
+          record.binaryFileUrl.url is not empty %}
+          {% include '@DAPClient/Search/detail-content/aside-metadata.html.twig' %}
+          <main class="col-md-9">
+            <div class="row">
+              <div class="col-md-12 u-mb-5">
+                {% if record.binaryFileUrl.type is defined and record.binaryFileUrl.type is not null and
+                  record.binaryFileUrl.type is not empty %}
+                  {% if record.binaryFileUrl.type == 'video' %}
+                    <div class="player is-video">
+                      <video controls>
+                        <source src="{{record.binaryFileUrl.url|raw }}">
+                          Your browser does not support HTML5 video.
+                        </video>
+                    </div>
+                  {% elseif record.binaryFileUrl.type == 'audio' %}
+                    <div class="player is-audio">
+                      <audio controls>
+                        <source src="{{record.binaryFileUrl.url|raw }}">
+                        Your browser does not support the audio element.
+                      </audio>
+                    </div>
+                  {% else %}
+                    <div class="text-center u-mb-4">
+                      <a href="{{record.binaryFileUrl.url|raw }}" class="button is-lspaced is-bare">
+                        <svg class="" width="24" height="24">
+                          <use xlink:href="#icon-download"></use>
+                        </svg>DOWNLOAD MEDIA
+                      </a>
+                    </div>
+                  {% endif %}
+                {% else %}
+                <div class="text-center u-mb-4">
+                  <a href="{{record.binaryFileUrl.url|raw }}" class="button is-lspaced is-bare">
+                    <svg class="" width="24" height="24">
+                      <use xlink:href="#icon-download"></use>
+                    </svg>DOWNLOAD MEDIA
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+              <section class="col-md-11 u-mb-14 mr-auto">
+                {% include '@DAPClient/Search/detail-content/section-down-metadata.html.twig' %}
+              </section>
+            </div>
+          </main>
+        {% else %}
+          <main class="col-md-12">
+            {% include '@DAPClient/Search/detail-content/detail-no-digital-object.html.twig' %}
+          </main>
+        {% endif %}
+      </div>
+      <hr class="u-mb-7">
+      <div id="related-articles" class="row">
+        <div class="col-md-12">
+          <aside>
+            <section class="related-articles">
+              <h2 class="related-articles__title text-center">See more on Miranda</h2>
+              <div class="related-articles__links">
+                <a class="button is-rounded is-alt-secondary is-outstanding" href="/">Start a new search <span>&nbsp;&nbsp;›</span></a>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="modal modal-flat fade" id="operationFail" tabindex="-1" role="dialog" aria-labelledby="TitleModalFolger Shakespeare Library - Digital Asset Platform" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content modal-flat__content">
+      <form>
+        <div class="modal-header modal-flat__header">
+        </div>
+        <div class="modal-body modal-flat__body">
+              <div class="text-center">
+                Operation failed!<br> Please try again.
+              </div>
+        </div>
+      </form>
+      <div class="modal-footer modal-flat__footer justify-content-center">
+        <button class="button is-medium is-deflated-md is-alt-secondary" type="button" class="btn btn-secondary" data-dismiss="modal">ACCEPT</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% endif %}
+{% endblock %}
+  {% block additional_script %}
+    <script>
+      relatedItemsList = {{ relatedItemsList | raw }};
+      collectionList = {{ collectionList | raw }};
+    </script>
+    <script type='application/ld+json'>
+        {
+            "@context": "http://schema.org/",
+            "@type": "WebPage",
+            {% if record.creator is defined %}
+            "creator": "{{ record.creator }}",
+            {% endif %}
+            {% if record.description is defined %}
+            {% if record.description is not iterable and record.description != '' %}
+                "description": "{{ record.description }}",
+                {% endif %}
+            {% endif %}
+            {% if record.title.displayTitle is defined %}
+            "name": "{{ record.title.displayTitle }}",
+            {% endif %}
+            {%  if record.dateCreated.displayDate is defined and record.dateCreated.displayDate != '' %}
+          "dateCreated": "{{ record.dateCreated.displayDate }}"
+            {% elseif record.dateCreated.isoDate is defined and record.dateCreated.isoDate != '' %}
+          {{ record.dateCreated.isoDate }}
+            {% endif %}
+        }
+    </script>
+  {% endblock %}

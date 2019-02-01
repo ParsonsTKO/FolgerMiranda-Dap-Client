@@ -1,0 +1,58 @@
+<header class="app-header">
+  <div class="app-header__section-a">
+    <div class="container">
+      <div class="app-header__section-a-inner">
+        <a href="https://www.folger.edu/" class="logo-main">
+          <img class="logo-main__img" src="{{ asset('images/logo-folger-shakespeare-library.svg') }}" alt="Folger">
+        </a>
+        {% include 'DAPClientBundle:Header:dropdown_profile.html.twig' %}
+      </div>
+    </div>
+  </div>
+  <div class="app-header__section-b">
+    <div class="container">
+      <div class="nav-bar">
+        <div class="nav-bar__logo">
+          <a href="/">
+            <img src="{{ asset('images/logo-miranda-beta.svg') }}" alt="Logo Miranda">
+          </a>
+        </div>
+        {% if app.user and app.user.enabled and is_granted('ROLE_USER') %}
+          <div class="nav-bar__myshelf count-myshelf" data-dropdown-for="#userCollection">
+            <a href="{{ path('dap_myshelf_dashboard') }}" class="myshelf-button">
+              MY SHELF
+              <svg class="myshelf-button__icon">
+                <use xlink:href="#icon-shelf"/>
+              </svg>
+              <span class="myshelf-button__count d-none" data-url="{{ path("dap_myshelf_allitems") }}" id="myshelf-count-badge" title="Add to Compendium"></span>
+            </a>
+          </div>
+        {% endif %}
+        <nav class="nav-bar__menu">
+          <ul>
+            <li>
+              <a href="/">{{ "home"|upper }}</a>
+            </li>
+            <li>
+              <a href="http://www.folger.edu/online-resources/digital-asset-platform">{{ "about"|upper }}</a>
+            </li>
+            <li>
+              <a href="https://wiki.folger.edu/collections-architecture-portal">{{ "Behind the Scenes"|upper }}</a>
+            </li>
+            <li>
+              <a href="https://topics.folger.edu/">{{ "Topics"|upper }}</a>
+            </li>
+            <li>
+              <a href="https://stories.folger.edu/">{{ "Stories"|upper }}</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <div class="app-header__section-c">
+    <div class="container">
+      Discover something new to see, hear, read, watch, and learn.
+    </div>
+  </div>
+</header>

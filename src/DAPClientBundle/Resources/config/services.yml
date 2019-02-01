@@ -1,0 +1,71 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $apiSessionEndpoint: "%env(APISESSION_ENDPOINT)%"
+            $graphQlEndpoint: "%endpoint.graphql%"
+
+    dap_client.logger:
+        alias: monolog.logger.dap_client
+        public: true
+
+    DAPClientBundle\Services\SearchService:
+        arguments:
+            $searchSettings: "%dap_client.search%"
+
+    DAPClientBundle\Services\RecordService:
+        arguments:
+            $searchSettings: "%dap_client.search%"
+
+    DAPClientBundle\Services\DownloadService:
+        arguments:
+            $downloadSettings: "%dap_client.download%"
+
+    dap_client.service.apiSession:
+        class: DAPClientBundle\Services\ApiSessionService
+        arguments: ["@dap_client.service.search"]
+
+    DAPClientBundle\Security\UserProvider\ApiKeyUserProvider: ~
+
+    DAPClientBundle\Security\Authentication\ApiKeyAuthenticationProvider:
+        abstract: true
+
+    DAPClientBundle\Security\Listener\ApiKeyAuthenticationListener:
+        abstract: true
+        arguments:
+            - "@security.token_storage"
+            - "@security.authentication.manager"
+            - "@security.authentication.session_strategy"
+            - "@security.http_utils"
+            - ~ # Provider-shared Key
+            - ~ # Failure handler
+            - ~ # Success Handler
+            - ~ # Options
+            - "@logger"
+            - "@event_dispatcher"
+        tags:
+            - { name: "monolog.logger", channel: "security" }
+
+    DAPClientBundle\Security\Listener\ApiKeySetCookieInResponseListener:
+        tags:
+            - { name: "kernel.event_subscriber" }
+
+    DAPClientBundle\Security\UserChecker\IsEnabledUserChecker: ~
+    DAPClientBundle\Security\Listener\ApiKeyLogoutHandler: ~
+    DAPClientBundle\Security\Guard\ApiKeyAuthenticationGuard: ~
+
+    DAPClientBundle\Pagination\Pagerfanta\DefaultView:
+        tags: [{ name: pagerfanta.view, alias: dapclient }]
+
+    DAPClientBundle\Provider\UserProvider: ~
+    DAPClientBundle\Services\ApiSessionService: ~
+
+    DAPClientBundle\Controller\:
+        resource: "../../Controller"
+        tags: ["controller.service_arguments"]
+
+    DAPClientBundle\Client\Client:
+        # controller should be made into services and this injected rather than using the container
+        public: true

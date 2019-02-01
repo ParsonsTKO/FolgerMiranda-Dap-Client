@@ -1,0 +1,8 @@
+actor: Visitor
+modules:
+    enabled:
+        - PhpBrowser:
+              url: http://web
+        - REST:
+              depends: PhpBrowser
+        - \DAPClient\Codeception\Helper\Redirects

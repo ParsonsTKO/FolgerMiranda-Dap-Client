@@ -1,0 +1,40 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    {% block head_analytics %}
+      {% include '@DAPClient/head_analytics.html.twig' %}
+    {% endblock %}
+    {% block head_title %}
+      {{ render(controller("DAPClientBundle:Head:title")) }}
+    {% endblock %}
+    {% block head_metadata %}
+      {{ render(controller("DAPClientBundle:Head:metadata")) }}
+    {% endblock %}
+    {% block head_style %}
+      {% include '@DAPClient/Head/style.html.twig' %}
+    {% endblock %}
+    {% block additional_style %}{% endblock %}
+    {% block head_script %}
+      {% include '@DAPClient/Head/script.html.twig' %}
+    {% endblock %}
+  </head>
+  <body>
+    {% block analytics %}
+      {% include '@DAPClient/analytics.html.twig' %}
+    {% endblock %}
+    {% block svgiconsxml %}
+      {% include '@DAPClient/svg_icons.html.twig' %}
+    {% endblock %}
+    {% block header %}
+      {% include '@DAPClient/Header/show.html.twig' %}
+    {% endblock %}
+    {% block content %}{% endblock %}
+    {% block footer %}
+      {% include '@DAPClient/Footer/show.html.twig' %}
+    {% endblock %}
+    {% block footer_script %}
+      {% include '@DAPClient/Footer/script.html.twig' %}
+    {% endblock %}
+    {% block additional_script %}{% endblock %}
+  </body>
+</html>

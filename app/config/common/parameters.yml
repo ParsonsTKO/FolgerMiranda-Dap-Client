@@ -1,0 +1,10 @@
+parameters:
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
+    env(GRAPHQL_API_ENDPOINT): https://server.collections.folger.edu
+    env(MANIFEST_ENDPOINT): https://server.collections.folger.edu
+    env(APISESSION_ENDPOINT): https://server.collections.folger.edu
+    env(FRONTEND_URL): https://static.collections.folger.edu/dap-client-frontend
+    env(FRONTEND_VERSION): 1.12.9
+
+    endpoint.graphql: "%env(GRAPHQL_API_ENDPOINT)%/graphql"

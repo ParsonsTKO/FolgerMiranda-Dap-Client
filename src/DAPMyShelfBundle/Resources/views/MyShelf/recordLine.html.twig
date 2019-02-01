@@ -1,0 +1,50 @@
+{% set icon = formatRecordIcons['default_icon'] %}
+{% if record.fullRecord.format.0 is defined %}
+  {% if record.fullRecord.format.0|lower in formatRecordIcons|keys  %}
+    {% set icon = formatRecordIcons[record.fullRecord.format.0|lower] %}
+  {% endif %}
+{% endif %}
+{% if record.fullRecord.title.displayTitle is defined and record.fullRecord.title.displayTitle is not empty %}
+  {% set nameUrl = record.fullRecord.title.displayTitle %}
+{% else %}
+  {% set nameUrl = 'record' %}
+{% endif %}
+
+<div class="card accordion__item">
+    <div class="card-header accordion__item-header">
+        <div class="accordion__item-cell is-width-a text-right u-pr-5" data-toggle="collapse" data-target="#{{ record.dapID }}" aria-expanded="{{(app.request.get('editItem') == record.dapID)? 'true' : 'false'}}"
+                    aria-controls="collapse{{ record.dapID }}">
+          <svg width="24" height="24">
+              <use xlink:href="#{{icon}}" />
+          </svg>
+        </div>
+        <div class="accordion__item-cell is-width-b" data-toggle="collapse" data-target="#{{ record.dapID }}" aria-expanded="{{(app.request.get('editItem') == record.dapID)? 'true' : 'false'}}"
+                    aria-controls="collapse{{ record.dapID }}">
+            <h4 class="accordion__item-title">
+                <a class="collapsed" href="{{ path('dap_client_detail', { 'name': nameUrl, 'dapID': record.dapID}) }}" data-toggle="collapse" data-target="#{{ record.dapID }}" aria-expanded="{{(app.request.get('editItem') == record.dapID)? 'true' : 'false'}}"
+                    aria-controls="collapse{{ record.dapID }}">
+                    {% if record.fullRecord.title is defined and record.fullRecord.title.displayTitle is defined  %}
+                        {{ record.fullRecord.title.displayTitle }}
+                    {% endif %}
+                </a>
+            </h4>
+        </div>
+        <div class="accordion__item-cell is-width-c"><strong>{{ record.lastUpdated | date("m/d/Y h:i a") }}</strong></div>
+        <div class="accordion__item-cell is-width-d u-pr-5 d-flex justify-content-end">
+          <!-- Uncomment to show icon - button of toolip info -->
+          <!-- <a href="#" class="">
+                <svg width="15" height="15" class='u-secondary'>
+                    <use xlink:href="#icon-exclamation-up" />
+                </svg>
+            </a> -->
+            {% include '@DAPMyShelf/MyShelf/components/dropdown-record-options.html.twig' %}
+        </div>
+
+    </div>
+
+    <div id="{{ record.dapID }}" class="collapse {% if app.request.get('editItem') == record.dapID %} show {% endif %}" aria-labelledby="headingOne">
+        <div class="card-body u-p-0">
+            {% include '@DAPMyShelf/MyShelf/components/card-record-embedded.html.twig' %}
+        </div>
+    </div>
+</div>

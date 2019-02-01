@@ -1,0 +1,79 @@
+
+<form method="get" action="{{ path ("dap_client_search")}}" name="changesearch">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="search-bar">
+        <div class="search-bar__inner">
+          <select class="form-select search-bar__format" name="format">
+            <option value="">Any Format</option>
+            {% for key, value in formats %}
+              <option value="{{key}}"{% if app.request.query.get('format') ==  key %} selected{% endif %}>{{value}}</option>
+            {% endfor %}
+          </select>
+          <input type="text" class="search-bar__input" name="searchterm" placeholder="Enter your search" value="{{ app.request.query.get('searchterm') }}">
+          <button type="submit" class="search-bar__submit" name="Search">
+            <svg>
+              <use xlink:href="#icon-search"/>
+            </svg>
+          </button>
+        </div>
+        <div class="text-right">
+          <a href="https://topics.folger.edu/search-help/" rel="noopener" class="search-bar__small"><em>Need Help Searching?</em></a>
+        </div>
+      </div>
+    </div>
+    {% if usermessage is defined and usermessage %}
+      <div class="col-md-12 bg-danger">
+        <h4 class="text-center">{{ usermessage|raw }}</h4>
+      </div>
+    {% endif %}
+    {% if showadvancedsearch is defined and showadvancedsearch %}
+      <div class="col-md-12">
+        <h2 class="subtitle is-lspaced text-center">MORE SEARCH OPTIONS</h2>
+      </div>
+    {% else %}
+      <button type="button" class="button-revealer" data-revealer="advanced-search-form" data-label-after-revealed="FEWER SEARCH OPTIONS">
+        <span data-revealer-label="">MORE SEARCH OPTIONS</span>
+        <svg>
+          <use xlink:href="#icon-plus-b" class="button-revealer__arrow-down" />
+          <use xlink:href="#icon-minus" class="button-revealer__arrow-up" />
+        </svg>
+      </button>
+    {% endif %}
+    <div id="advanced-search-form" class="block-advanced-search"{{ showadvancedsearch|default(false) ? '' : ' style="display: none"' }}>
+      <div class="row">
+        <div class="col-md-4">
+          {% include '@DAPClient/Search/dateslider.html.twig' with { 'startdate': 1025, 'currentmin': 1480, 'slidertitle': true } %}
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="field-search-languages" class="form-group__label">Language</label>
+            <select class="form-select form-group__field" id="field-search-languages" name="languagefilter">
+              <option value="">Any Language</option>
+              {% for key, value in languagesOffered %}
+                <option value="{{key}}"{% if app.request.query.get('languagefilter') == key %} selected{% endif %}>{{value}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="field-search-genres" class="form-group__label">Genre</label>
+            <select id="field-search-genres" class="form-select form-group__field" name="genre">
+              <option value="">Any Genre</option>
+              {% for key, value in genres %}
+                <option value="{{key}}"{% if app.request.query.get('genre') ==  key %} selected{% endif %}>{{value}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-12 u-mt-5">
+          <div class="form-group u-centerAll">
+            <input class="form-checkbox checkbox-facets" type="checkbox" id="availableonline" name="availableonline"{% if app.request.query.get('availableonline') == 'on' %} checked{% endif %}>
+            <label for="availableonline"><strong>Only show media available online</strong></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

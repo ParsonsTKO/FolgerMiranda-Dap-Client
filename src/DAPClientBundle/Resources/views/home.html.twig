@@ -1,0 +1,121 @@
+{% extends "DAPClientBundle::base_layout.html.twig" %}
+
+{% block head_metadata %}
+  {{ render(controller("DAPClientBundle:Head:metadata",
+      {"detailMeta" : {
+          'og:title': metadata.title_suffix,
+          'og:url': url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params'))|replace({'http://' : 'https://'}),
+          'og:image': 'https://static.collections.folger.edu/FolgerShakespeareLibrary.png',
+          'og:description': "The Miranda digital asset platform is the new home for the Folger&#039;s collections online."  } } )) }}
+{% endblock %}
+
+{% block content %}
+  <div class="main">
+    <div class="banner-section">
+      <div class="banner-section__content container">
+        <div class="row">
+          <div class="col-md-12">
+            <h3 class="banner-section__heading text-center">
+              What are you looking for?
+            </h3>
+            <div class="banner-section__body block-search">
+              {% include '@DAPClient/Search/mainform.html.twig' %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="banner-section__image">
+        <img src="{{ asset('images/banner-1.jpg') }}" alt="banner-section-bg">
+      </div>
+    </div>
+    <div class="block-pagebody">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-5">
+            <article class="article-introduction">
+              <h4 class="article-introduction__heading">What is Miranda?</h4>
+              <p>
+                Miranda helps you discover something new to see, hear, and learn from the world of the Folger
+                Shakespeare Library.
+              </p>
+              <p>
+                Whether you&rsquo;re doing research or searching for something fun, Miranda can help you find what
+                you&rsquo;re looking for.
+              </p>
+              <p>
+                Miranda holds images, videos, podcasts, and datasets for you to explore. Miranda also holds library
+                records for the thousands of objects in the Folger&rsquo;s collections that are not yet digitized,
+                giving you rich and detailed information about what you can’t see online.
+              </p>
+              <p>
+                Miranda helps you save and organize what you find on My Shelf. And with the items in our collection,
+                Miranda shares insights on Shakespeare, the world he lived in, and the legacy he left behind.
+              </p>
+              <p>
+                Start with a search. Discover something new on Miranda today.
+              </p>
+              <p>
+                If you have any feedback for us, send an email to
+                <a href="mailto:dap@folger.edu">dap@folger.edu</a>. We'll take your views into consideration as we
+                work on future versions of Miranda.
+              </p>
+            </article>
+          </div>
+          <div class="col-md-7">
+            <article class="article-features">
+              <h4 class="article-features__heading">
+                Explore what's on Miranda:
+              </h4>
+              <div class="article-features__grid">
+                <div class="card-thumbnail">
+                  <img class="card-thumbnail__image" src="https://iiif.collections.folger.edu/iiif/2/ef6b6038-4169-41ab-a80a-26236f32c236.TIFF/full/!500,500/0/default.jpg" alt="As You Like it sketch by Dali">
+                  <div class="card-thumbnail__content">
+                    <a href="{{ path("dap_client_detail", {"type": "detail", "name": "william-shakespeare", "dapID": "e60fe7b8-de3a-4d62-895c-ff3dfc4e3db3"}) }}" title="See designs by Dalí">
+                      <svg class="card-thumbnail__icon">
+                        <use xlink:href="#icon-search-2"/>
+                      </svg>
+                      <span class="card-thumbnail__title"> See designs by Dalí</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="card-thumbnail">
+                  <img class="card-thumbnail__image" src="https://iiif.collections.folger.edu/iiif/2/8fe81337-a5ae-49f7-99c0-414d69ab3a94.TIFF/full/!500,500/0/default.jpg" alt="A letter from Queen Elizabeth">
+                  <div class="card-thumbnail__content">
+                    <a href="{{ path("dap_client_detail", {"type": "detail", "name": "autograph-letter-signed-from-elizabeth-i-queen-of-england-to-james-vi-king-of-scotland", "dapID": "c8b2e662-4786-4221-84f0-4e3b3ca8420b"}) }}" title="Read a letter from Queen Elizabeth">
+                      <svg class="card-thumbnail__icon">
+                        <use xlink:href="#icon-book"/>
+                      </svg>
+                      <span class="card-thumbnail__title">Read a letter from Queen Elizabeth</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="card-thumbnail">
+                  <img class="card-thumbnail__image" src="https://iiif.collections.folger.edu/iiif/2/021f198b-ea6f-4dc4-a7d9-b15fc7295815.JPG/216,320,674,906/!500,500/0/default.jpg" alt="Nell Gwynn">
+                  <div class="card-thumbnail__content">
+                    <a href="https://topics.folger.edu/nell-gwynn" title="Learn about Nell Gwynn">
+                      <svg class="card-thumbnail__icon">
+                        <use xlink:href="#icon-book"/>
+                      </svg>
+                      <span class="card-thumbnail__title">Learn about Nell Gwynn</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="card-thumbnail">
+                  <img class="card-thumbnail__image" src="https://iiif.collections.folger.edu/iiif/2/9e1d9a77-f6c5-424e-9010-b0e2e6fe203f.JPG/full/!500,500/0/default.jpg" alt="Fish-shaped Fish Pie">
+                  <div class="card-thumbnail__content">
+                    <a href="{{ path("dap_client_detail", {"type": "detail", "name": "shakespeare%27s-kitchen-with-francine-segan", "dapID": "4ee5de78-a850-4d08-a5a3-e24925ddbe8f"}) }}" title="Hear about Shakespeare's kitchen">
+                      <svg class="card-thumbnail__icon">
+                        <use xlink:href="#icon-multimedia"/>
+                      </svg>
+                      <span class="card-thumbnail__title">Hear about Shakespeare&rsquo;s kitchen</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

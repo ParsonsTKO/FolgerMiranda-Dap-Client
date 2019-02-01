@@ -1,0 +1,122 @@
+{% if record.title.displayTitle is defined %}
+
+  {% set urlName = "name" %}
+  {% set urlDapID = "id" %}
+
+  {% if record.title.displayTitle != "" %}
+    {% set urlName = record.title.displayTitle | replace({ '[': '', ']': '', ':': '', ',': '', '/': '', '.': '', "’": '-', ' ': '-' }) | lower %}
+  {% endif %}
+
+  {% if record.dapID != "" %}
+    {% set urlDapID = record.dapID %}
+  {% endif %}
+
+  {% set url = path('dap_client_detail', {
+    'name': urlName,
+    'dapID': urlDapID
+    }) 
+  %}
+      <div>
+          <article class="card-media {% if record.icon is defined %} has-icon{% else %} is-single{% endif %}">
+            {% if (record.availableOnline is defined and record.availableOnline) %}
+              <span class="card-media__tag">Available Online</span>
+              {% endif %}
+            {% if record.icon is defined and record.icon is not empty %}
+              <svg class="card-media__icon" width="24" height="24">
+                <use xlink:href="#{{record.icon}}"/>
+              </svg>
+            {% else %}
+              <svg class="card-media__icon" width="24" height="24">
+                <use xlink:href="#icon-doc" />
+              </svg>
+            {% endif %}
+
+          <div class="card-media__content">
+            <h4 class="card-media__title">
+              <a href="{{url}}">
+                {% if record.title.displayTitle is defined %}
+                  {{ record.title.displayTitle }}
+                {% endif %}
+              </a>
+            </h4>
+            <div class="card-media__desc">
+              {% if record.creator is defined and record.creator is not null %}
+                <div class="metadata">
+                  <h6 class="metadata__title">Creator</h6>
+                  <div class="metadata__desc">
+                    {{ record.creator }}
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if (record.dateCreated is defined and record.dateCreated is not null) %}
+                {% if (record.dateCreated.displayDate is defined and record.dateCreated.displayDate is not null) or (record.dateCreated.isoDate is defined and record.dateCreated.isoDate is not null) %}
+                  <div class="metadata">
+                    <h6 class="metadata__title">Date</h6>
+                    <div class="metadata__desc">
+                      {% if record.dateCreated.displayDate is defined %}
+                        {{ record.dateCreated.displayDate }}
+                      {% elseif record.dateCreated.isoDate is defined %}
+                        {{ record.dateCreated.isoDate }}
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+
+              {% if record.format is defined and record.format|length > 0  %}
+                <div class="metadata">
+                  <h6 class="metadata__title">Media Format</h6>
+                  <div class="metadata__desc">
+                    {% for format in record.format %}
+                      {{ format }}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if record.locationCreated is defined and record.locationCreated is not null %}
+                {% if (record.locationCreated.address is defined and record.locationCreated.address is not null) or (record.locationCreated.addressLocality is defined and record.locationCreated.addressLocality is not null) or (record.locationCreated.addressRegion is defined and record.locationCreated.addressRegion is not null) or (record.locationCreated.locationDescriptor is defined and record.locationCreated.locationDescriptor is not null) %}
+                  <div class="metadata">
+                    <h6 class="metadata__title">Location</h6>
+                    <div class="metadata__desc">
+                      {% if record.locationCreated.address is defined %}{{ record.locationCreated.address }}{% endif %}
+                      {% if record.locationCreated.addressLocality is defined %}{{ record.locationCreated.addressLocality }}{% endif %}
+                      {% if record.locationCreated.addressRegion %}{{ record.locationCreated.addressRegion }}{% endif %}
+                      {% if record.locationCreated.locationDescriptor %}{{ record.locationCreated.locationDescriptor }}{% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+
+              {% if record.folgerDisplayIdentifier is defined and record.folgerDisplayIdentifier is not null %}
+                <div class="metadata">
+                  <h6 class="metadata__title">Reference ID</h6>
+                  <div class="metadata__desc">{{ record.folgerDisplayIdentifier }}</div>
+                </div>
+              {% endif %}
+              {% if record.caption is defined and record.caption is not null %}
+                <div class="metadata">
+                    <h6 class="metadata__title">Caption</h6>
+                    <div class="metadata__desc">{{ record.caption }}</div>
+                </div>
+              {% endif %}
+            </div>
+            <div class="card-media__actions" data-myshelf-add-remove="{{ urlDapID }}">
+              <a href="{{url}}" class="details card-media__action">
+                Details
+                <svg width="13" height="13"><use xlink:href="#icon-search"/></svg>
+              </a>
+              <a href="{{ path("dap_myshelf_shelfrecord", { 'dapid': urlDapID }) }}" class="card-media__action{% if app.user.enabled is defined and app.user.enabled %} add_shelf_result d-none{% endif %} record-add-myshelf">
+                Add to shelf
+                <svg width="13" height="14"><use xlink:href="#icon-shelf"/></svg>
+              </a>
+              <a href="{{ path("dap_myshelf_unshelfrecord", { 'dapid': urlDapID }) }}" class="card-media__action add_shelf_result d-none record-remove-myshelf">
+                Remove from shelf
+                <svg width="13" height="14"><use xlink:href="#icon-shelf"/></svg>
+              </a>              
+            </div>
+          </div>
+        </article>
+      </div>
+{% endif %}

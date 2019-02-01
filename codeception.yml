@@ -1,0 +1,14 @@
+namespace: DAPClient\Codeception
+actor_suffix: Tester
+paths:
+    tests: tests/DAPClient/Codeception
+    output: var/codeception/output
+    log: var/codeception/log
+    data: tests/DAPClient/Codeception/_data
+    support: tests/DAPClient/Codeception/_support
+    envs: tests/DAPClient/Codeception/_envs
+settings:
+    colors: true
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed

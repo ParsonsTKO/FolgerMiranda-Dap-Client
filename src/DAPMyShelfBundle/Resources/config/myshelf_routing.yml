@@ -1,0 +1,59 @@
+dap_myshelf_dashboard:
+    path: /
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:dashboard }
+
+dap_myshelf_folder:
+    path: /folder/{folderId}
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:folder }
+    methods: GET
+
+dap_myshelf_addfolder:
+    path: /addfolder
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:addFolder }
+    methods:
+        - POST
+        - GET
+
+dap_myshelf_allitems:
+    path: /allitems
+    defaults: { _controller: DAPMyShelfBundle:MyShelfJson:allItems }
+    methods: GET
+
+dap_myshelf_removeall:
+    path: /removeall
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:removeAll }
+
+dap_myshelf_removefolder:
+    path: /removefolder
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:removeFolder }
+
+dap_myshelf_shelfrecord:
+    path: /shelfrecord
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:shelfRecord }
+    methods:
+        - POST
+        - GET
+
+dap_myshelf_unshelfrecord:
+    path: /unshelfrecord
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:unshelfRecord }
+    methods:
+        - POST
+        - GET
+
+dap_myshelf_download:
+    path: /download
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:download }
+    methods: GET
+
+dap_myshelf_editfolder:
+    path: /editfolder
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:editFolder }
+    methods:
+        - POST
+        - GET
+
+dap_shelf_folder:
+    path: /shelffolder/{shelftag}
+    defaults: { _controller: DAPClientBundle:ShelfFolder:view }
+    methods: GET

@@ -1,0 +1,220 @@
+{% extends "DAPClientBundle::base_layout.html.twig" %}
+
+{% block head_title %}
+  {{ render(controller("DAPClientBundle:Head:title", {"viewTitle": "Search results"})) }}
+{% endblock %}
+
+{% block head_metadata %}
+  {{ render(controller("DAPClientBundle:Head:metadata", {"detailMeta" : {'og:title': "Search results",
+      'og:url': app.request.uri|replace({'http://':'https://'}),
+      'og:image': 'https://static.collections.folger.edu/FolgerShakespeareLibrary.png',
+      'og:description': "Search Results for " ~ searchText  } })) }}
+{% endblock %}
+
+{% block header %}
+  {% include 'DAPClientBundle:Header:show.html.twig' only %}
+{% endblock %}
+
+{% block page_style %}Page Page--details{% endblock %}
+
+{% block content %}
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-header__heading text-center">Your current search for “{{ app.request.query.get('searchterm') }}”</h1>
+      <button type="button" class="button-revealer" data-revealer="search-form">
+        CHANGE SEARCH
+        <svg>
+          <use xlink:href="#icon-plus-b" class="button-revealer__arrow-down"/>
+          <use xlink:href="#icon-minus" class="button-revealer__arrow-up"/>
+        </svg>
+      </button>
+      <div id="search-form" class="block-search" style="display: none">
+        {% include '@DAPClient/Search/mainform.html.twig' with {'showadvancedsearch': true} %}
+      </div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="container">
+      <div id="page-body" class="row">
+      <aside id="search-filters-aside" class="page-side col-md-3">
+        <form method="get" action="{{ path ("dap_client_search")}}" name="filter">
+          <input type="hidden" name="searchterm" value="{{ app.request.query.get('searchterm') }}">
+          <input type="hidden" name="languagefilter" value="{{ app.request.query.get('languagefilter') }}">
+          <input type="hidden" name="genre" value="{{ app.request.query.get('genre') }}">
+          <input type="hidden" name="format" value="{{ app.request.query.get('format') }}">
+          <section class="page-aside__block">
+            <h4 class="subtitle page-aside__block-heading">Date range</h4>
+            {% include '@DAPClient/Search/dateslider.html.twig' with {'reload': true, 'startdate': 1025, 'currentmin' : 1480 } %}
+          </section>  
+          <section class="page-aside__block">  
+            <h4 class="subtitle page-aside__block-heading">Available Online</h4>
+            <ul class="filterset">
+              <li>
+                <div class="u-iflex">
+                  <input class="form-checkbox checkbox-facets reload" type="checkbox" id="leftavailableonline" name="availableonline"{% if app.request.query.get('availableonline') == 'on' %} checked{% endif %}>
+                  <label for="leftavailableonline">Media available online</label>
+                </div>
+              </li>
+            </ul>
+          </section>
+          {% if facets is defined and facets | length > 0 %}
+            {% for facetname, facetgroup in facets %}
+            <section class="page-aside__block">
+                <h4 class="subtitle page-aside__block-heading">{{ facetname }}</h4>
+                <ul class="filterset">
+                  {% for thisfacet in facetgroup %}
+                    {% if loop.index == 6 %}
+                  </ul>
+                    <ul class="filterset" id="{{facetname|replace({' ':''})}}-rest-options" style="display: none">
+                    {% endif %}
+                      <li>
+                        <div class="u-iflex">
+                          <input class="form-checkbox checkbox-facets reload" type="checkbox" id="{{ thisfacet.key }}" name="facets[{{ thisfacet.facet }}][]" value="{{ thisfacet.key }}"{% if (app.request.query.get('facets')[thisfacet.facet] is defined and thisfacet.key in app.request.query.get('facets')[thisfacet.facet]) or
+                          (app.request.query.get('refine') == thisfacet.facet and app.request.query.get('refineto') == thisfacet.key) %}checked{% endif %}>
+                          <label for="{{ thisfacet.key }}">
+                            {% if thisfacet.facet == 'language' %}
+                                {% if languagesOffered[thisfacet.key] is defined %}
+                                 {{ languagesOffered[thisfacet.key] }}
+                                {% else %} {#in this case, we are showing a language facet that doesn't match one of our language codes. #}
+                                    {{ thisfacet.key }}
+                                {% endif %}
+                            {% else %}
+                              {{ thisfacet.key }}
+                            {% endif %}
+                            <span class="u-subtle">({{ thisfacet.count }})</span>
+                          </label>
+                        </div>
+                      </li>
+                  {% endfor %}
+                </ul>
+                {% if facetgroup|length >5 %}
+                  <div class="u-mt-2 button is-bare" data-revealer="{{facetname|replace({' ':''})}}-rest-options">
+                    <svg width="12" height="12">
+                      <use class="on-default" xlink:href="#icon-plus"/>
+                      <use class="on-active" xlink:href="#icon-minus"/>
+                    </svg>
+                    <span>SEE</span>&nbsp;
+                    <span class="on-default">ALL</span>
+                    <span class="on-active">FIRST 5</span>
+                  </div>
+                {% endif %}
+              </section>
+            {% endfor %}
+          {% endif %}
+          </form>
+        </aside>
+
+        <main class="col-md-9">
+          {# <article id="related-searches" class="u-mb-8"> <h3 class="heading-secondary u-mb-5">Related Searches</h3> <div class="slider-rail swiper-container" data-swiper="rail"> <div class="slider-rail__wrapper swiper-wrapper"> <div
+          class="slider-rail__slide swiper-slide"> <a href="#" class="link-record"> <span class="link-record__title"> Hamlet </span> <span class="link-record__content"> 0 </span> </a> </div> </div> <button class="slider-rail__prev swiper-button-prev"> <svg
+          width="10" height="20"> <use xlink:href="#icon-arrow-left"/> </svg> </button> <button class="slider-rail__next swiper-button-next"> <svg width="10" height="20"> <use xlink:href="#icon-arrow-right"/> </svg> </button> </div> </article> #}
+          <div id="search-results-container">
+            {% if featuredResult is not empty %}
+              <section id="featured-result" class="result-records__featured">
+                <h5 class="subtitle is-secondary u-mb-3">FEATURED RESULT</h5>
+                <article class="card-media">
+                  <a href="{{ featuredResult.0.link }}" target="_blank" class="card-small__image">
+                    {% if featuredResult.0.thumbnail is not null%}
+                      <img src="{{ featuredResult.0.thumbnail }}" alt="">
+                    {% else %}
+                      <img src="https://via.placeholder.com/325x280" alt="Placeholder image">
+                    {% endif %}
+                  </a>
+                  <div class="card-media__content">
+                    <h4 class="card-media__title"><a href="{{ featuredResult.0.link }}" target="_blank">{{ featuredResult.0.title }}</a></h4>
+                    <div class="card-media__desc">
+                      <p>
+                        {{ featuredResult.0.teaser }}
+                      </p>
+                      <a href="{{ featuredResult.0.link }}" target="_blank" class="small button is-secondary" data-name="" data-dapid="">LEARN MORE</a>
+                    </div>
+                  </div>
+                </article>
+              </section>
+              <hr>
+            {% endif %}
+            <section id="visualization-options" class="results-header u-mb-6">
+              <h3 class="heading-secondary results-header__primary">
+                {% set totalresults = pager.getNbResults %}
+                {% if totalresults > 0 %}
+                  {% if totalresults == 1 %}
+                    {{ totalresults|number_format }} Result
+                  {% else %}
+                    {{ totalresults|number_format }} Results
+                  {% endif %}
+                {% else %}
+                  0 Results
+                {% endif %}
+              </h3>
+              <div class="buttonset results-header__viewmode" data-viewmode="search-results">
+                <button class="button is-icon is-active" data-mode="row">
+                  <svg width="20" height="20">
+                    <use xlink:href="#icon-bars"/>
+                  </svg>
+                </button>
+                <button class="button is-icon" data-mode="grid">
+                  <svg width="20" height="20">
+                    <use xlink:href="#icon-grid"/>
+                  </svg>
+                </button>
+              </div>
+              <select class="form-select is-small is-inline" style="display:none">
+                <option selected>View 6 Results</option>
+                <option>View 9 Results</option>
+                <option>View 12 Results</option>
+              </select>
+            </section>
+            <div id="search-results" class="result-records u-mb-7">
+              {% if totalresults is defined and totalresults > 0 %}            
+                {% for record in records %}
+                  {{ render(controller(
+                      'DAPClientBundle:View:recordSearchItem',
+                      { 'record': record }
+                  )) }}
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+          {% if pager.haveToPaginate %}
+              <nav aria-label="Page navigation">
+                  {{ pagerfanta(
+                      pager,
+                      'dapclient',
+                      { 'proximity': 3,
+                        'prev_message': '<svg><use xlink:href="#icon-arrow-left"/></svg>',
+                        'next_message': '<svg><use xlink:href="#icon-arrow-right"/></svg>',
+                        'css_container_class': 'pagination-single',
+                        'css_disabled_class': 'is-disabled',
+                        'css_active_class': 'is-current',
+                        'css_prev_class': 'pagination-single__prev',
+                        'css_next_class': 'pagination-single__next',
+                        'css_dots_class': 'pagination-single__ellipsis'
+                        }
+                    ) }}
+              </nav>
+          {% elseif totalresults is defined and totalresults == 0 %}
+              <h2>No results found</h2>
+          {% endif %}
+        </main>
+      </div>
+    </div>
+  </div>
+<div class="modal modal-flat fade" id="operationFail" tabindex="-1" role="dialog" aria-labelledby="TitleModalFolger Shakespeare Library - Digital Asset Platform" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content modal-flat__content">
+      <form>
+        <div class="modal-header modal-flat__header">
+        </div>
+        <div class="modal-body modal-flat__body">
+              <div class="text-center">
+                Operation failed!<br> Please try again.
+              </div>
+        </div>
+      </form>
+      <div class="modal-footer modal-flat__footer justify-content-center">
+        <button class="button is-medium is-deflated-md is-alt-secondary" type="button" class="btn btn-secondary" data-dismiss="modal">ACCEPT</button>
+      </div>
+    </div>
+  </div>
+</div>  
+{% endblock %}

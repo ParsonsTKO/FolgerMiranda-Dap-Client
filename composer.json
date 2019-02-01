@@ -1,0 +1,61 @@
+{
+  "name": "folger/dapclient",
+  "type": "project",
+  "description": "Folger DAP Client",
+  "license": "proprietary",
+  "autoload": {
+    "psr-4": {
+      "DAPClientBundle\\": "src/DAPClientBundle",
+      "DAPMyShelfBundle\\": "src/DAPMyShelfBundle"
+    },
+    "classmap": [
+      "app/AppKernel.php",
+      "app/AppCache.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "": "tests/"
+    },
+    "files": ["vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"]
+  },
+  "require": {
+    "php": ">=7.0",
+    "guzzlehttp/guzzle": "^6.3",
+    "ramsey/uuid": "^3.8",
+    "sensio/framework-extra-bundle": "^3.0",
+    "symfony/monolog-bundle": "^3.2",
+    "symfony/symfony": "^3.4",
+    "white-october/pagerfanta-bundle": "^1.1.0||^2.0.0"
+  },
+  "require-dev": {
+    "aplyca/behat-contexts": "*@dev",
+    "codeception/codeception": "^2"
+  },
+  "scripts": {
+    "symfony-scripts": [],
+    "post-install-cmd": [],
+    "post-update-cmd": []
+  },
+  "config": {
+    "platform": {
+      "php": "7.2.12"
+    },
+    "preferred-install": {
+      "*": "dist"
+    },
+    "sort-packages": true,
+    "optimize-autoloader": true
+  },
+  "extra": {
+    "symfony-app-dir": "app",
+    "symfony-bin-dir": "bin",
+    "symfony-var-dir": "var",
+    "symfony-web-dir": "web",
+    "symfony-tests-dir": "tests",
+    "symfony-assets-install": "relative",
+    "branch-alias": {
+      "dev-master": "3.4-dev"
+    }
+  }
+}

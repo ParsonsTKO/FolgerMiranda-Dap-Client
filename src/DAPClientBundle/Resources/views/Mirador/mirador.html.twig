@@ -1,0 +1,53 @@
+{% extends "DAPClientBundle::base_layout.html.twig" %}
+
+{% block head_title %}
+  <title>Mirador - Folger Shakespeare Library - Digital Asset Platform</title>
+{% endblock %}
+
+{% block head_metadata %}
+  {{ render(controller(
+    "DAPClientBundle:Head:metadata", 
+    {
+      "detailMeta" : {
+        'og:title': 'Mirador - Folger Shakespeare Library - Digital Asset Platform', 
+        'og:url': url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) 
+      } 
+    }
+  )) }}
+{% endblock %}
+
+{% block head_style %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/mirador@2.6.0/dist/css/mirador-combined.min.css">
+{% endblock %}
+
+{% block additional_style %}{% endblock %}
+
+{% block head_script %}
+  <script src="https://cdn.jsdelivr.net/npm/mirador@2.6.0/dist/mirador.min.js"></script>
+{% endblock %}
+
+{% block svgiconsxml %}{% endblock %}
+{% block header %}{% endblock %}
+
+{% block content %}
+  <div id="viewer"></div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+{% block footer_script %}{% endblock %}
+
+{% block additional_script %}
+  <script>
+    Mirador({
+      id: "viewer",
+      data: [
+        { manifestUri: "{{ manifest_uri }}", location: "Folger Shakespeare Library" }
+        ],
+      windowObjects: [{
+        loadedManifest: "{{ manifest_uri }}",
+        viewType: "ImageView"
+      }]
+    });
+  </script>
+{% endblock %}
+

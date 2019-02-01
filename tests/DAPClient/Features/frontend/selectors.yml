@@ -1,0 +1,5 @@
+"Search results":
+  #Records: "#search-results > div > article.card-media > div.card-media__content"
+  Records: "#search-results > div > article.card-media > div.card-media__content"
+  #Pagination: "nav[aria-label='Page navigation'] > ul.pagination-single"
+  Pagination: "#page-body > main > nav > ul.pagination-single"

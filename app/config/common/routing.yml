@@ -1,0 +1,24 @@
+dap_client:
+    resource: "@DAPClientBundle/Resources/config/routing.yml"
+    prefix: /
+
+dap_myshelf:
+    resource: "@DAPMyShelfBundle/Resources/config/routing.yml"
+
+login:
+    path: /login
+    controller: DAPClientBundle\Controller\UserController:login
+
+login_check:
+    path: /login-check
+
+logout:
+    path: /logout
+
+profile:
+    path: /profile
+    controller: DAPClientBundle\Controller\UserController:profile
+
+register:
+    path: /register
+    controller: DAPClientBundle\Controller\UserController:register

@@ -1,0 +1,11 @@
+twig:
+    globals:
+      formatRecordIcons:
+          manuscript text: "icon-script"
+          notated music: "icon-video"
+          video: "icon-video"
+          sound: "icon-sound"
+          audio recording: "icon-sound"
+          image: "icon-picture"
+          3d object: "icon-picture"
+          default_icon: "icon-doc"

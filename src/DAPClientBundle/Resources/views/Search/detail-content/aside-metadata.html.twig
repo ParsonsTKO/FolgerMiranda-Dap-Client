@@ -1,0 +1,138 @@
+<aside id="record-metadata" class="page-side col-md-3">
+  {% if record.creator is defined and record.creator is not empty %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        Creator
+      </h6>
+      <div class="metadata__desc">
+        {{ record.creator }}
+      </div>
+    </div>
+  {% endif %}
+  {% if record.dateCreated is defined and record.dateCreated is not null %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        Date
+      </h6>
+      <div class="metadata__desc">
+        {% if record.dateCreated.displayDate is defined %}
+        {{ record.dateCreated.displayDate }}
+        {% elseif record.dateCreated.isoDate is defined %}
+        {{ record.dateCreated.isoDate }}
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  {% if record.locationCreated is defined and record.locationCreated is not null %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        Location
+      </h6>
+      <div class="metadata__desc">
+        {% if record.locationCreated is defined and record.locationCreated is not null %}
+        {% if record.locationCreated.locationDescriptor is defined and record.locationCreated.locationDescriptor is not
+        empty %}
+        {{ record.locationCreated.locationDescriptor }} <br>
+        {% endif %}
+        {% if record.locationCreated.addressLocality is defined and record.locationCreated.addressLocality is not empty
+        %}
+        {{ record.locationCreated.addressLocality }},&nbsp;
+        {% endif %}
+        {% if record.locationCreated.addressRegion is defined and record.locationCreated.addressRegion is not empty %}
+        {{ record.locationCreated.addressRegion }} <br>
+        {% endif %}
+        {% if record.locationCreated.addressCountry is defined and record.locationCreated.addressCountry is not empty %}
+        {{ record.locationCreated.addressCountry }} <br>
+        {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  {% if record.format is defined and record.format is not null %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        Media format
+      </h6>
+      <div class="metadata__desc">
+        {% for format in record.format %}
+        {{ format }} <br>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  {% if record.extent is defined and record.extent is not empty %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        Extent
+        <span data-tooltip="(Pages, Number, Duration, etc.)" data-tooltip-pos="top">
+          <svg class="" width="16" height="16">
+            <use xlink:href="#icon-questionmark" />
+          </svg>
+        </span>
+      </h6>
+      <div class="metadata__desc">
+        {{ record.extent }}
+      </div>
+    </div>
+  {% endif %}
+  <hr>
+  {% if record.language is defined and record.language is not null %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        Language
+      </h6>
+      <div class="metadata__desc">
+          {% for language in record.language %}
+              {% if languagesOffered[language] is defined %}
+                  {{ languagesOffered[language] }} <br>
+              {% else %}
+                  {{ language }} <br>
+              {% endif %}
+          {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (record.holdingInstitution.name is defined and record.holdingInstitution.name is not empty) and
+  (record.holdingInstitution.exhibitionCode is defined and record.holdingInstitution.exhibitionCode is not empty) %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        Holding Institution
+      </h6>
+      <div class="metadata__desc">
+        {{ record.holdingInstitution.name }}: {{ record.holdingInstitution.exhibitionCode}}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if record.license is defined and record.license is not empty %}
+    <div class="metadata">
+      <h6 class="metadata__title">
+        License
+      </h6>
+      <div class="metadata__desc">
+        {{ record.license}}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if record.size is defined and record.size is not null %}
+    <div class="metadata">
+      <h6 class="metadata__title">Size</h6>
+      <div class="metadata__desc">
+        {{ record.size }}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if record.mirandaGenre is defined and record.mirandaGenre is not null %}
+    <div class="metadata">
+      <h6 class="metadata__title">Genre</h6>
+      <div class="metadata__desc">
+        {% for mirandaGenre in record.mirandaGenre %}
+        {{ mirandaGenre }} <br>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</aside>

@@ -1,0 +1,351 @@
+{% extends "DAPClientBundle::base_layout.html.twig" %}
+
+{% block head_metadata %}
+  {{ render(controller(
+    "DAPClientBundle:Head:metadata",
+    {
+      "detailMeta" : {
+        'og:title': 'My Shelf Dashboard',
+        'og:url': url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params'))
+      }
+    }
+  )) }}
+{% endblock %}
+
+{% block head_title %}
+  {{ render(controller("DAPClientBundle:Head:title", {"viewTitle": "Your personal research shelf"})) }}
+{% endblock %}
+
+{% block header %}
+  {% include 'DAPClientBundle:Header:show.html.twig' only %}
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-header__heading text-center">My Shelf</h1>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container">
+        {% if not app.user or not app.user.enabled or not is_granted('ROLE_USER') %}
+          <div class="row u-mb-10">
+            <div class="col-md-12">
+              <p>Please <a href="{{ path('login') }}" class="u-dark"><strong>log in</strong></a> or <a href="{{ path('register') }}" class="u-dark"><strong>create
+                    an account</strong></a> to save and share your shelf.</p>
+              <hr>
+            </div>
+          </div>
+          {% set isPublic = (data.MyShelf.0.MyShelfFolders.0.isPublic)? true: false %}
+          {% if isPublic %}
+            {% set tagId = data.MyShelf.0.MyShelfFolders.0.MyShelfFolderTag %}
+            {% set tagName = data.MyShelf.0.MyShelfFolders.0.MyShelfFolderName %}
+            <main class="col-md-12">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-myshelf">
+                  <li><a href="{{path("dap_myshelf_dashboard")}}">My Shelf</a></li>
+                  <li class="active" aria-current="page">{{ data.MyShelf.0.MyShelfFolders.0.MyShelfFolderName }} ({{ data.MyShelf.0.MyShelfFolders.0.record|length }})</li>
+                </ol>
+              </nav>
+              <div class="note-form u-mb-5" data-note>
+                {% set notesCurrentFolder = data.MyShelf.0.MyShelfFolders.0.notes %}
+                <form data-note-form class="note-form__inner" action="{{ path("dap_myshelf_editfolder", {'tagname': tagName, 'ispublic': isPublic, 'shelftag': tagId, 'response_json': true }) }}" method="POST">
+                  <p class="note-form__note u-pre-wrap{% if notesCurrentFolder is empty %} d-none{% endif %}">{{ notesCurrentFolder }}</p>
+                  <textarea name="tagnotes" data-note-input class="note-form__note u-pre-wrap{% if notesCurrentFolder is not empty %} d-none{% endif %}" data-autoresize rows="1" placeholder="Add an optional note">{{notesCurrentFolder}}</textarea>
+                  <div class="note-form__actions {% if notesCurrentFolder is not empty %} is-active {% endif %}" data-note-actions>
+                    <div class="{% if notesCurrentFolder is empty %}d-none{% endif %}">
+                      <button type="button" data-note-actions-edit>EDIT</button><span class="d-inline-block u-mr-2 u-ml-2">|</span>
+                      <a data-note-actions-delete href="{{ path("dap_myshelf_editfolder", {'shelftag': tagId, 'ispublic': isPublic, 'tagname': tagName, 'tagnotes': '', 'response_json': true}) }}">DELETE
+                        NOTE</a>
+                    </div>
+                    <div class="{% if notesCurrentFolder is not empty %}d-none{% endif %}">
+                      <button type="submit">SAVE</button><span class="d-inline-block u-mr-2 u-ml-2">|</span>
+                      <button type="button" data-note-actions-discard>DON’T SAVE</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              {% if data.MyShelf.0.MyShelfFolders.0.record is empty %}
+                Folder empty.
+              {% else %}
+                <div class="tile-a">
+                  <div class="tile-a__header has-four-cell">
+                    <div class="tile-a__cell is-width-a">
+                      <h6 class="tile-a__title">Items</h6>
+                    </div>
+                    <div class="tile-a__cell is-width-b">
+                      Title
+                    </div>
+                    <div class="tile-a__cell is-width-c">
+                      Date Modified
+                    </div>
+                    <div class="tile-a__cell is-width-d text-right ">
+                      <div class="dropdown dropdown-flat">
+                        <a href="#" class="d-flex justify-content-end align-items-center" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false" id="dropdownMenuButton" data-toggle-collapse-accordion>
+                          <svg width="30" height="16" class="is-first u-dark">
+                            <use xlink:href="#icon-list" />
+                          </svg>
+                          <svg width="8" height="13" class="is-first u-dark">
+                            <use xlink:href="#icon-arrow-down-b" />
+                          </svg>
+                        </a>
+                        <ul class="dropdown-menu dropdown-flat__menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                          <li><a class="dropdown-item" href="#" data-expanded-accordion="#accordion-records">Expanded all items</a></li>
+                          <li><a class="dropdown-item" href="#" data-collapse-accordion="#accordion-records">Collapse all items</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tile-a__body">
+                    <div class="accordion" id="accordion-records">
+                      {% for records in data.MyShelf.0.MyShelfFolders.0.record %}
+                        {% include '@DAPMyShelf/MyShelf/recordLine.html.twig' with {'record': records, 'folders': data.allFolders.0.MyShelfFolders} only %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            </main>
+          {% endif %}
+        {% else %}
+        {% set tagId = data.MyShelf.0.MyShelfFolders.0.MyShelfFolderTag %}
+        {% set tagName = data.MyShelf.0.MyShelfFolders.0.MyShelfFolderName %}
+        {% set isPublic = (data.MyShelf.0.MyShelfFolders.0.isPublic)? true: false %}
+        <div class="row">
+          <aside class="page-side col-md-3">
+            <div class="u-mb-5">
+            {% set isFolderEmpty = data.MyShelf.0.MyShelfFolders.0.record is empty ? true : false %}  
+              <a href="{{ path("dap_myshelf_editfolder", {'shelftag': tagId, 'ispublic': not isPublic, 'tagname': tagName, 'redirect': app.request.uri }) }}" class="button is-secondary is-medium is-deflated-sides w-100 mb-2">
+                <svg width="15" height="15" class="is-first mr-2">
+                  <use xlink:href="#icon-share" />
+                </svg>
+                {% if isPublic %}UNSHARE {% else %}SHARE {% endif %}FOLDER
+              </a>
+              <a href="{{ path("dap_myshelf_download", {'shelftag': tagId}) }}" class="button is-secondary is-medium is-deflated-sides w-100 mb-2{% if isFolderEmpty %} btn disabled{% endif %}"{% if isFolderEmpty %} disabled{% endif %}>
+                <svg width="15" height="15" class="is-first mr-2">
+                  <use xlink:href="#icon-download-b" />
+                </svg>
+                DOWNLOAD FOLDER
+              </a>              
+              <button type="button" class="button is-secondary is-medium is-deflated-sides w-100 mb-2"
+                data-toggle="modal" data-target="#clearFolder"{% if isFolderEmpty %} disabled{% endif %}>
+                CLEAR FOLDER
+              </button>
+              <button type="button" class="button is-secondary is-medium is-deflated-sides w-100 mb-2"
+                data-toggle="modal" data-target="#renameFolder">
+                RENAME FOLDER
+              </button> 
+              <button type="button" class="button is-secondary is-medium is-deflated-sides w-100 mb-2"
+                data-toggle="modal" data-target="#removeFolder">
+                REMOVE FOLDER
+              </button>                            
+            </div>
+          </aside>
+          <main class="col-md-9">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-myshelf">
+                <li><a href="{{path("dap_myshelf_dashboard")}}">My Shelf</a></li>
+                <li class="active" aria-current="page">{{ data.MyShelf.0.MyShelfFolders.0.MyShelfFolderName }} ({{ data.MyShelf.0.MyShelfFolders.0.record|length }})</li>
+              </ol>
+            </nav>
+            {% if isPublic %}
+            <p>This is a public folder, you can share it with this link: <a href="{{ app.request.getSchemeAndHttpHost() ~ path("dap_myshelf_sharedfolder", {'shelfTag': tagId}) }}" title="Shared folder link">{{ app.request.getSchemeAndHttpHost() ~ path("dap_myshelf_sharedfolder", {'shelfTag': tagId}) }}</a></p>
+            {% endif %}
+            <div class="note-form u-mb-5" data-note>
+              {% set notesCurrentFolder = data.MyShelf.0.MyShelfFolders.0.notes %}
+              <form data-note-form class="note-form__inner" action="{{ path("dap_myshelf_editfolder", {'tagname': tagName, 'ispublic': isPublic, 'shelftag': tagId, 'format': 'json' }) }}" method="POST">
+                <p class="note-form__note u-pre-wrap{% if notesCurrentFolder is empty %} d-none{% endif %}">{{ notesCurrentFolder }}</p>
+                <textarea name="tagnotes" data-note-input class="note-form__note u-pre-wrap{% if notesCurrentFolder is not empty %} d-none{% endif %}" data-autoresize rows="1" placeholder="Add an optional note">{{notesCurrentFolder}}</textarea>
+                <div class="note-form__actions {% if notesCurrentFolder is not empty %} is-active {% endif %}" data-note-actions>
+                  <div class="{% if notesCurrentFolder is empty %}d-none{% endif %}">
+                    <button type="button" data-note-actions-edit>EDIT</button><span class="d-inline-block u-mr-2 u-ml-2">|</span>
+                    <a data-note-actions-delete href="{{ path("dap_myshelf_editfolder", {'shelftag': tagId, 'ispublic': isPublic, 'tagname': tagName, 'tagnotes': '', 'format': 'json' }) }}">DELETE
+                      NOTE</a>
+                  </div>
+                  <div class="{% if notesCurrentFolder is not empty %}d-none{% endif %}">
+                    <button type="submit">SAVE</button><span class="d-inline-block u-mr-2 u-ml-2">|</span>
+                    <button type="button" data-note-actions-discard>DON’T SAVE</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            {% if data.MyShelf.0.MyShelfFolders.0.record is empty %}
+              Folder empty.
+            {% else %}
+              <div class="tile-a">
+                <div class="tile-a__header has-four-cell">
+                  <div class="tile-a__cell is-width-a">
+                    <h6 class="tile-a__title">Items</h6>
+                  </div>
+                  <div class="tile-a__cell is-width-b">
+                    Title
+                  </div>
+                  <div class="tile-a__cell is-width-c">
+                    Date Modified
+                  </div>
+                  <div class="tile-a__cell is-width-d text-right ">
+                    <div class="dropdown dropdown-flat">
+                      <a href="#" class="d-flex justify-content-end align-items-center" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false" id="dropdownMenuButton" data-toggle-collapse-accordion>
+                        <svg width="30" height="16" class="is-first u-dark">
+                          <use xlink:href="#icon-list" />
+                        </svg>
+                        <svg width="8" height="13" class="is-first u-dark">
+                          <use xlink:href="#icon-arrow-down-b" />
+                        </svg>
+                      </a>
+                      <ul class="dropdown-menu dropdown-flat__menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="#" data-expanded-accordion="#accordion-records">Expanded all items</a></li>
+                        <li><a class="dropdown-item" href="#" data-collapse-accordion="#accordion-records">Collapse all items</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="tile-a__body">
+                  <div class="accordion" id="accordion-records">
+                    {% for records in data.MyShelf.0.MyShelfFolders.0.record %}
+                      {% include '@DAPMyShelf/MyShelf/recordLine.html.twig' with {'record': records, 'folders': data.allFolders.0.MyShelfFolders, 'viewPublicFolder': false} only %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </main>
+        </div>
+        <div class="modal modal-flat fade" id="newFolder" tabindex="-1" role="dialog" aria-labelledby="TitleModalNewFolder"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modal-flat__content">
+              <form id="add-new-folder" name="AddNewFolder" action="{{path("dap_myshelf_addfolder")}}">
+                <div class="modal-header modal-flat__header">
+                  <h4 class="modal-title" id="TitleModalNewFolder">Create new Folder</h4>
+                </div>
+                <div class="modal-body modal-flat__body">
+                  <input type="text" name="tagname" placeholder="New Folder Name" class="form-field" required>
+                  <input type="hidden" name="ispublic" value="false">
+                  <input type="hidden" name="redirect" value="{{ app.request.uri }}">
+                  <div class="block-error u-secondary text-center d-none"></div>
+                </div>
+                <div class="modal-footer modal-flat__footer justify-content-center">
+                  <button class="button is-medium is-deflated-md is-alt-secondary" type="button" class="btn btn-secondary"
+                    data-dismiss="modal">CANCEL</button>
+                  <button type="submit" class="button is-medium is-deflated-md is-secondary" class="btn btn-primary">CREATE</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal modal-flat fade" id="clearFolder" tabindex="-1" role="dialog" aria-labelledby="TitleModalclearFolder"
+               aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content modal-flat__content">
+                <div class="modal-header modal-flat__header">
+                </div>
+                <div class="modal-body modal-flat__body">
+                  <div class="text-center">
+                    Are you sure you want to clear your folder?<br> All items will be removed and you can not undo.
+                  </div>
+                </div>
+                <div class="modal-footer modal-flat__footer justify-content-center">
+                  <button class="button is-medium is-deflated-md is-alt-secondary" type="button" class="btn btn-secondary"
+                          data-dismiss="modal">DON'T CLEAR</button>
+                  <a href="{{ path("dap_myshelf_removeall", {'shelftag': tagId, 'redirect': app.request.uri }) }}" class="button is-medium is-deflated-md is-secondary" class="btn btn-primary">CLEAR</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal modal-flat fade" id="renameFolder" tabindex="-1" role="dialog" aria-labelledby="TitleModalRenameFolder"
+               aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content modal-flat__content">
+                <form name="RenameFolder" action="{{path("dap_myshelf_editfolder")}}">
+                  <div class="modal-header modal-flat__header">
+                    <h4 class="modal-title" id="TitleModalRenameFolder">Rename Folder "{{ tagName }}"</h4>
+                  </div>
+                  <div class="modal-body modal-flat__body">
+                    <input type="text" name="tagname" placeholder="{{ tagName }}" class="form-field" required>
+                    <input type="hidden" name="shelftag" value="{{ tagId }}">
+                    <input type="hidden" name="redirect" value="{{ app.request.uri }}">
+                  </div>
+                  <div class="modal-footer modal-flat__footer justify-content-center">
+                    <button class="button is-medium is-deflated-md is-alt-secondary" type="button" class="btn btn-secondary"
+                            data-dismiss="modal">CANCEL</button>
+                    <button type="submit" name="SaveRenameFolder" class="button is-medium is-deflated-md is-secondary" class="btn btn-primary">SAVE</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal modal-flat fade" id="removeFolder" tabindex="-1" role="dialog" aria-labelledby="TitleModalRenameFolder"
+               aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content modal-flat__content">
+                <form name="RemoveFolder" action="{{path("dap_myshelf_removefolder")}}">
+                  <div class="modal-header modal-flat__header">
+                    <h4 class="modal-title" id="TitleModalRemoveFolder">Remove Folder "{{ tagName }}"</h4>
+                  </div>
+                  <div class="modal-body modal-flat__body">
+                    <div class="text-center">
+                      Are you sure you want to remove your folder? <br>
+                      All items will be removed and you can not undo.
+                    </div>
+                  </div>
+                  <div class="modal-body modal-flat__body">
+                    <input type="hidden" name="shelftag" value="{{ tagId }}">
+                  </div>
+                  <div class="modal-footer modal-flat__footer justify-content-center">
+                    <button class="button is-medium is-deflated-md is-alt-secondary" type="button" class="btn btn-secondary"
+                            data-dismiss="modal">CANCEL</button>
+                    <button type="submit" class="button is-medium is-deflated-md is-secondary" class="btn btn-primary">REMOVE</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal modal-flat fade" id="operationFail" tabindex="-1" role="dialog" aria-labelledby="TitleModalFolger Shakespeare Library - Digital Asset Platform" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content modal-flat__content">
+                <form>
+                  <div class="modal-header modal-flat__header">
+                  </div>
+                  <div class="modal-body modal-flat__body">
+                    <div class="text-center">
+                      Operation failed!<br> Please try again.
+                    </div>
+                  </div>
+                </form>
+                <div class="modal-footer modal-flat__footer justify-content-center">
+                  <button class="button is-medium is-deflated-md is-alt-secondary" type="button" class="btn btn-secondary" data-dismiss="modal">ACCEPT</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+{% endblock %}
+  {% block additional_script %}
+    <script type='application/ld+json'>
+        {
+            "@context": "http://schema.org/",
+            "@type": "WebPage",
+            {% if record.creator is defined %}
+            "creator": "{{ record.creator }}",
+            {% endif %}
+            {% if record.description is defined %}
+            {% if record.description is not iterable and record.description != '' %}
+                "description": "{{ record.description }}",
+                {% endif %}
+            {% endif %}
+            {% if record.title.displayTitle is defined %}
+            "name": "{{ record.title.displayTitle }}",
+            {% endif %}
+            {%  if record.dateCreated.displayDate is defined and record.dateCreated.displayDate != '' %}
+          "dateCreated": "{{ record.dateCreated.displayDate }}"
+            {% elseif record.dateCreated.isoDate is defined and record.dateCreated.isoDate != '' %}
+          {{ record.dateCreated.isoDate }}
+            {% endif %}
+        }
+    </script>
+  {% endblock %}

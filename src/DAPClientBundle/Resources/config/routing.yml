@@ -1,0 +1,46 @@
+dap_client_homepage:
+    path: /
+    defaults: { _controller: DAPClientBundle:View:home }
+
+dap_client_search:
+    path: /search
+    defaults: { _controller: DAPClientBundle:Search:gqlSearch }
+
+dap_client_detail:
+    path: /detail/{name}/{dapID}
+    defaults: { _controller: DAPClientBundle:Search:detail }
+    methods: GET
+    requirements:
+        name: ".+"
+
+dap_client_download:
+    path: /download/image/{rootfile}/{image}
+    defaults: { _controller: DAPClientBundle:View:downloadImage }
+    methods: GET
+
+dap_client_binary_download:
+    path: /binary/{binaryFile}
+    defaults: { _controller: DAPClientBundle:View:downloadBinary }
+    methods: GET
+
+dap_client_download_csv:
+    path: /download/record/{dapID}/csv
+    defaults: { _controller: DAPClientBundle:View:downloadCsv }
+    methods: GET
+
+dap_client_mirador:
+    path: /mirador/{dapID}
+    defaults: { _controller: DAPClientBundle:Mirador:mirador }
+    methods: GET
+    # requirements:
+    #     dapID: "/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i"
+
+dap_client_apisession_callback:
+    path: /apisession/callback
+    defaults: { _controller: DAPClientBundle:ApiSession:callback }
+    methods: GET
+
+dap_client_apisession_logout:
+    path: /apisession/logout
+    defaults: { _controller: DAPClientBundle:ApiSession:logout }
+    methods: GET

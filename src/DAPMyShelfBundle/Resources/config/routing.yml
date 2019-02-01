@@ -1,0 +1,13 @@
+dap_myshelf:
+    resource: "myshelf_routing.yml"
+    prefix: /myshelf
+
+dap_myshelf_sharedfolder:
+    path: /sharedfolder/{shelfTag}
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:publicFolder }
+    methods: GET
+
+dap_myshelf_sharedfolder_download:
+    path: /downloadsharedfolder
+    defaults: { _controller: DAPMyShelfBundle:MyShelf:download }
+    methods: GET

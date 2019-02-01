@@ -1,0 +1,3 @@
+imports:
+    - { resource: "@DAPClientBundle/Resources/config/services.yml" }
+    - { resource: "@DAPMyShelfBundle/Resources/config/services.yml" }

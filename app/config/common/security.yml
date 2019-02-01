@@ -1,0 +1,37 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/security.html
+security:
+    # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    providers:
+        api_key:
+            id: 'DAPClientBundle\Security\UserProvider\ApiKeyUserProvider'
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            anonymous: ~
+            stateless: true
+            api_key:
+                provider: api_key
+                login_path: login
+                check_path: login_check
+            logout:
+                path: logout
+                target: dap_client_homepage
+                handlers:
+                    - DAPClientBundle\Security\Listener\ApiKeyLogoutHandler
+            guard:
+                authenticators:
+                    - DAPClientBundle\Security\Guard\ApiKeyAuthenticationGuard
+
+    access_control:
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login-check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/myshelf/, role: ROLE_USER }

@@ -1,0 +1,36 @@
+<li class="myshelf-tag">
+    <div class="myshelf-tag__cell is-width-a text-right u-pr-5">
+        <a href="#">
+            <svg width="24" height="20">
+                <use xlink:href="#icon-folder" />
+            </svg>
+        </a>
+    </div>
+    <div class="myshelf-tag__cell is-width-b">
+        <a href="{{ path("dap_myshelf_folder", {'folderId': folderTag.MyShelfFolderTag}) }}" class="myshelf-tag__title">{{ folderTag.MyShelfFolderName }} ({{folderTag.record | length }})</a>
+    </div>
+    <div class="myshelf-tag__cell is-width-c">
+        <span><strong>{{ folderTag.lastUpdated | date("m/d/Y h:i a") }}</strong></span>
+    </div>
+    <div class="myshelf-tag__cell is-width-d text-right u-pr-5">
+      <div class="dropdown-options btn-group u-ml-1">
+        <a href="#" class="dropdown-options__toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <svg width="18" height="18">
+            <use xlink:href="#icon-menu" />
+          </svg>
+        </a>
+        <ul class="dropdown-menu dropdown-options__menu is-right">
+          <li><a href="{{ path("dap_myshelf_editfolder", {'shelftag': folderTag.MyShelfFolderTag, 'ispublic': not folderTag.isPublic, 'tagname': folderTag.MyShelfFolderName }) }}">{% if folderTag.isPublic %}Unshare{% else %}Share{% endif %}</a></li>
+          <li><a href="{{ path("dap_myshelf_download", {'shelftag': folderTag.MyShelfFolderTag }) }}">Download</a></li>
+          <li><a href="#modalRenameFolder" data-target="#modalRenameFolder" data-toggle="modal"
+            data-tagname="{{folderTag.MyShelfFolderName}}"
+            data-shelftag="{{folderTag.MyShelfFolderTag}}"
+            data-ispublic="{{folderTag.isPublic}}">Rename</a></li>
+            <li><a href="#modalRemoveFolder" data-target="#modalRemoveFolder" data-toggle="modal"
+              data-tagname="{{folderTag.MyShelfFolderName}}"
+              data-shelftag="{{folderTag.MyShelfFolderTag}}"
+            >Remove</a></li>
+        </ul>
+      </div>
+    </div>
+</li>

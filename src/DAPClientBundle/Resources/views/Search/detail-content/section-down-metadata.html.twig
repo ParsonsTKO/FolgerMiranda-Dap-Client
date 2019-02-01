@@ -1,0 +1,161 @@
+{% if record.identifiers is defined and record.identifiers is not null %}
+<div class="metadata">
+  <h5 class="metadata__title">Reference IDs</h5>
+  <div class="metadata__desc">
+    {% for i in record.identifiers if i.key is not empty and i.value is not empty %}
+    {{i.key}}: {{i.value}} <br>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% if record.abstract is defined and record.abstract is not empty %}
+<div class="metadata">
+  <h5 class="metadata__title">Summary</h5>
+  <div class="metadata__desc">
+    {{ record.abstract }}
+  </div>
+</div>
+{% endif %}
+{% if record.notes is defined and record.notes is not null %}
+<div class="metadata">
+  <h5 class="metadata__title u-mb-2">Notes</h5>
+  <div class="metadata__desc">
+    {% for note in record.notes if note.note is not empty %}
+      {% if note.label is defined and note.label is not empty %}
+        <h6 class="u-fontSize-xmedium u-mb-2"><strong>{{ note.label }}</strong></h6>
+      {% endif %}
+    <p> {{ note.note }}</p>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if record.alsoKnowAs is defined and record.alsoKnowAs is not null %}
+<div class="metadata">
+  <h5 class="metadata__title">Also known as</h5>
+  <div class="metadata__desc">
+    {% if record.alsoKnowAs.uniformTitle is defined and record.alsoKnowAs.uniformTitle is not empty %}
+    Uniform title: {{ record.alsoKnowAs.uniformTitle }} <br>
+    {% endif %}
+    {% if record.alsoKnowAs.extendedTitle is defined and record.alsoKnowAs.extendedTitle is not empty %}
+    Extended title: {{ record.alsoKnowAs.extendedTitle }} <br>
+    {% endif %}
+    {% if record.alsoKnowAs.alternateTitles is defined and record.alsoKnowAs.alternateTitles is not null %}
+    Alternate titles: {{ record.alsoKnowAs.alternateTitles }}
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% if record.subjects is defined and record.subjects is not null %}
+<div class="metadata">
+  <h5 class="metadata__title">Subjects</h5>
+  <div class="metadata__desc">
+    {% for subject in record.subjects if subject.description is defined and subject.description is not empty %}
+    {{ subject.description }} <br>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% if record.relationships is defined %}
+{% if record.relationships.agents is defined and record.relationships.agents is not null %}
+<div class="metadata">
+  <h5 class="metadata__title">Related names</h5>
+  <div class="metadata__desc">
+    {% for agent in record.relationships.agents if agent.relationship is not empty and agent.agentName is not empty %}
+    {{ agent.relationship }}: {{ agent.agentName }} <br>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% if record.relationship.works is defined and record.relationship is not null %}
+<div class="metadata">
+  <h5 class="metadata__title">Related works</h5>
+  <div class="metadata__desc">
+    {% for work in record.relationships.works if work.relationship is not empty and work.workInstance is not empty %}
+    {{ work.relationship }}: {{ work.workInstance }} <br>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% if record.relationships.locations is defined and record.relationships.locations is not null %}
+<div class="metadata">
+  <h5 class="metadata__title">Related locations</h5>
+  <div class="metadata__desc">
+    {% for location in record.relationships.locations if location is not empty %}
+    {{ (location.relationship is defined and location.relationship is not empty) ? (location.relationship ~': ') : ""
+    }}
+    {{ (location.locationDescriptor is not empty) ? (location.locationDescriptor~',') : '' }}
+    {{ (location.addressLocality is not empty)? (location.addressLocality~',') : '' }}
+    {{ (location.addressRegion is not empty)? (location.addressRegion~',') : '' }}
+    {{ location.addressCountry }} <br>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endif %}
+{% if record.preferredCitation is defined and record.preferredCitation is not empty %}
+<div class="metadata">
+  <h5 class="metadata__title">How to cite
+    <span data-tooltip="(Lorem, Ipsum)" data-tooltip-pos="top">
+      <svg class="" width="16" height="16">
+        <use xlink:href="#icon-questionmark" />
+      </svg>
+    </span>
+  </h5>
+  <div class="metadata__desc">
+    {{ record.preferredCitation }}
+  </div>
+</div>
+{% endif %}
+{% if record.groupings is defined and record.groupings is not null %}
+<div class="metadata">
+  <h5 class="metadata__title">Associated with</h5>
+  <div class="metadata__desc">
+    {{ record.groupings }}
+  </div>
+</div>
+{% endif %}
+{% if record.fileInfo is defined and record.fileInfo is not empty %}
+  <div class="metadata">
+    <h5 class="metadata__title">File information</h5>
+    <div class="metadata__desc">
+        {% if record.fileInfo.encodingFormat is not empty %}
+          Encoding format: {{ record.fileInfo.encodingFormat }} <br>
+        {% endif %}
+        {% if record.fileInfo.contentSize is not empty %}
+          Content size: {{ record.fileInfo.contentSize }} <br>
+        {% endif %}
+        {% if record.fileInfo.height is not empty %}
+          Height: {{ record.fileInfo.height }} <br>
+        {% endif %}
+        {% if record.fileInfo.width is not empty %}
+          Width: {{ record.fileInfo.width }} <br>
+        {% endif %}
+        {% if record.fileInfo.duration is not empty %}
+          Duration: {{ record.fileInfo.duration }} <br>
+        {% endif %}
+        {% if record.fileInfo.numberOfRows is not empty %}
+          NumberOfRows: {{ record.fileInfo.numberOfRows }} <br>
+        {% endif %}
+        {% if record.fileInfo.numberOfRows is not empty %}
+          Number of rows: {{ record.fileInfo.numberOfRows }} <br>
+        {% endif %}
+    </div>
+  </div>
+{% endif %}
+{% if record.locus is defined and record.locus is not empty %}
+<div class="metadata">
+  <h5 class="metadata__title">Locus</h5>
+  <div class="metadata__desc">
+      {{ record.locus }}
+  </div>
+</div>
+{% endif %}
+{% if record.simplifiedTranscription is defined and record.simplifiedTranscription is not empty %}
+<div class="metadata">
+  <h5 class="metadata__title">Transcription</h5>
+  <div class="metadata__desc">
+    {{ record.simplifiedTranscription }}
+  </div>
+</div>
+{% endif %}

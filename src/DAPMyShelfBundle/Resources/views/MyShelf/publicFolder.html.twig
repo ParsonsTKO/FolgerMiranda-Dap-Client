@@ -1,0 +1,141 @@
+{% extends "DAPClientBundle::base_layout.html.twig" %}
+
+{% block head_metadata %}
+  {{ render(controller(
+    "DAPClientBundle:Head:metadata",
+    {
+      "detailMeta" : {
+        'og:title': 'My Shelf Dashboard',
+        'og:url': url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params'))
+      }
+    }
+  )) }}
+{% endblock %}
+
+{% block head_title %}
+  {{ render(controller("DAPClientBundle:Head:title", {"viewTitle": "Shared folder"})) }}
+{% endblock %}
+
+{% block header %}
+  {% include 'DAPClientBundle:Header:show.html.twig' only %}
+{% endblock %}
+
+{% block content %}
+    {% set username = folder.owner %}
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-header__heading text-center">{{ username|upper~"'s Shelf" }}</h1>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container">
+        {% if not app.user or not app.user.enabled or not is_granted('ROLE_USER') %}
+        <div class="row u-mb-10">
+          <div class="col-md-12">
+              <p>Please <a href="{{ path('login') }}" class="u-dark"><strong>log in</strong></a> or <a href="{{ path('register') }}" class="u-dark"><strong>create
+                        an account</strong></a> to save and share your shelf.</p>
+              <hr>
+          </div>
+        </div>
+        {% endif %}
+        {% set tagId = folder.MyShelfFolderTag %}
+        {% set tagName = folder.MyShelfFolderName %}
+        {% set isPublic = (folder.isPublic)? true: false %}
+        <div class="row">
+          <aside class="page-side col-md-3">
+            <div class="u-mb-5">
+            {% set isFolderEmpty = folder.record is empty ? true : false %}  
+              <a href="{{ path("dap_myshelf_sharedfolder_download", {'shelftag': tagId}) }}" class="button is-secondary is-medium is-deflated-sides w-100 mb-2{% if isFolderEmpty %} btn disabled{% endif %}"{% if isFolderEmpty %} disabled{% endif %}>
+                <svg width="15" height="15" class="is-first mr-2">
+                  <use xlink:href="#icon-download-b" />
+                </svg>
+                DOWNLOAD FOLDER
+              </a>              
+            </div>
+          </aside>
+          <main class="col-md-9">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-myshelf">
+                <li class="active" aria-current="page">{{ folder.MyShelfFolderName }} ({{ folder.record|length }})</li>
+              </ol>
+            </nav>
+            {% set notesCurrentFolder = folder.notes %}
+            {% if notesCurrentFolder is defined and notesCurrentFolder is not empty %}
+              <div class="note-form u-mb-5">
+                <div class="note-form__inner">
+                  <p class="note-form__note u-pre-wrap"><strong class="font-weight-bold">{{username|upper }}</strong>&nbsp;&nbsp;{{ notesCurrentFolder }}</p>
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if folder.record is empty %}
+              Folder empty.
+            {% else %}
+              <div class="tile-a">
+                <div class="tile-a__header has-four-cell">
+                  <div class="tile-a__cell is-width-a">
+                    <h6 class="tile-a__title">Items</h6>
+                  </div>
+                  <div class="tile-a__cell is-width-b">
+                    Title
+                  </div>
+                  <div class="tile-a__cell is-width-c">
+                    Date Modified
+                  </div>
+                  <div class="tile-a__cell is-width-d text-right ">
+                    <div class="dropdown dropdown-flat">
+                      <a href="#" class="d-flex justify-content-end align-items-center" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false" id="dropdownMenuButton" data-toggle-collapse-accordion>
+                        <svg width="30" height="16" class="is-first u-dark">
+                          <use xlink:href="#icon-list" />
+                        </svg>
+                        <svg width="8" height="13" class="is-first u-dark">
+                          <use xlink:href="#icon-arrow-down-b" />
+                        </svg>
+                      </a>
+                      <ul class="dropdown-menu dropdown-flat__menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="#" data-expanded-accordion="#accordion-records">Expanded all items</a></li>
+                        <li><a class="dropdown-item" href="#" data-collapse-accordion="#accordion-records">Collapse all items</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="tile-a__body">
+                  <div class="accordion" id="accordion-records">
+                    {% for records in folder.record %}
+                      {% include '@DAPMyShelf/MyShelf/recordLine.html.twig' with {'record': records, 'folders': [], 'viewPublicFolder': true, 'username': username } only %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </main>
+        </div>
+        
+      </div>
+    </div>    
+{% endblock %}
+  {% block additional_script %}
+    <script type='application/ld+json'>
+        {
+            "@context": "http://schema.org/",
+            "@type": "WebPage",
+            {% if record.creator is defined %}
+            "creator": "{{ record.creator }}",
+            {% endif %}
+            {% if record.description is defined %}
+            {% if record.description is not iterable and record.description != '' %}
+                "description": "{{ record.description }}",
+                {% endif %}
+            {% endif %}
+            {% if record.title.displayTitle is defined %}
+            "name": "{{ record.title.displayTitle }}",
+            {% endif %}
+            {%  if record.dateCreated.displayDate is defined and record.dateCreated.displayDate != '' %}
+          "dateCreated": "{{ record.dateCreated.displayDate }}"
+            {% elseif record.dateCreated.isoDate is defined and record.dateCreated.isoDate != '' %}
+          {{ record.dateCreated.isoDate }}
+            {% endif %}
+        }
+    </script>
+  {% endblock %}

@@ -1,0 +1,21 @@
+{% if currentmin is not defined %}
+{% set currentmin = startdate %}
+{% endif %}
+<div class="rangeslider-year{% if reload|default(false) %} reload{% endif %}" data-range-slider-year="">
+  <div class="rangeslider-year__fields">
+    <label for="datecreatedfrom" class="d-none">Created from</label> 
+    <input title="Created from" type="number" class="rangeslider-year__field is-min{% if reload|default(false) %} reload{% endif %}" name="createdfrom" placeholder="Created from" data-initial="{{ startdate|default(0) }}" value="{{ app.request.query.get('createdfrom')|default(currentmin) }}" min="{{ startdate|default(0) }}" max="{{ enddate|default("now"|date("Y")) }}" step="1" id="datecreatedfrom">
+    {% if slidertitle|default(false) %}
+      <div class="rangeslider-year__label">Date Range</div>
+    {% endif %}
+    <label for="datecreateduntil" class="d-none">Created until</label> 
+    <input title="Created until" type="number" class="rangeslider-year__field is-max{% if reload|default(false) %} reload{% endif %}" name="createduntil" placeholder="Created until" data-initial="{{ enddate|default("now"|date("Y")) }}" value="{{ app.request.query.get('createduntil')|default("now"|date("Y")) }}" min="{{ startdate|default(0) }}" max="{{ enddate|default("now"|date("Y")) }}" step="1" id="datecreateduntil">
+  </div>
+  <div class="rangeslider-year__graph" data-range-slider-year-graph="{{ startdate|default(0) }},{{ enddate|default("now"|date("Y")) }}"></div>
+  <button type="button" class="button rangeslider-year__reset" data-range-silder-year-reset>
+    <svg width="16"  height="15">
+      <use xlink:href="#icon-reset" />
+    </svg>
+    Reset date range
+  </button>
+</div>

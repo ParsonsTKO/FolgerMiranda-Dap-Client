@@ -1,0 +1,24 @@
+{% extends "DAPClientBundle::base_layout.html.twig" %}
+
+{% block head_title %}
+<title>Error! Something went wrong - Folger Shakespeare Library - Digital Asset Platform</title>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-header__heading text-center">Error! Something went wrong</h1>
+  </div>
+</div>
+<div class="page-body">
+  <div class="container">
+      <div id="page-body" class="row">
+        <main class="col-md-12">
+          <h4 class="text-center">
+              Error! Something went wrong. The requested operation couldn't be executed, please try again or <a href="{{ path('dap_client_homepage') }}">return to the homepage</a>.
+          </h4>
+        </main>
+      </div>
+    </div>
+  </div>
+{% endblock %}

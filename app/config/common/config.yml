@@ -1,0 +1,53 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+    - { resource: "@DAPClientBundle/Resources/config/config.yml" }
+    - { resource: "@DAPMyShelfBundle/Resources/config/config.yml" }
+
+framework:
+    secret: "%secret%"
+    router:
+        resource: "%kernel.root_dir%/config/common/routing.yml"
+        strict_requirements: ~
+    form: ~
+    csrf_protection: ~
+    validation: { enable_annotations: true }
+    templating:
+        engines: ["twig"]
+    default_locale: "%locale%"
+    trusted_hosts: ~
+    session:
+        enabled: true
+    fragments: ~
+    http_method_override: true
+    assets:
+        version: "%env(FRONTEND_VERSION)%"
+        version_format: "%%2$s/dist/%%1$s"
+        base_urls:
+            - "%env(FRONTEND_URL)%"
+    php_errors:
+        log: true
+
+# Twig Configuration
+twig:
+    debug: "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+monolog:
+    channels: ["dap_client"]
+    handlers:
+        main:
+            type: fingers_crossed
+            handler: nested
+        nested:
+            type: stream
+            path: "php://stderr"
+            level: debug
+        console:
+            type: console
+
+white_october_pagerfanta:
+    exceptions_strategy:
+        out_of_range_page: ~
+        not_valid_current_page: ~

@@ -1,0 +1,111 @@
+{% set fullRecord = record.fullRecord %}
+<article class="card-media is-embedded">
+  <div class="card-media__content">
+    <h4 class="card-media__title">
+      {% if fullRecord.title is defined and fullRecord.title.displayTitle is defined %}
+        {% set nameUrl = (fullRecord.title.displayTitle is defined and fullRecord.title.displayTitle is not empty)? fullRecord.title.displayTitle : 'record' %}
+        <a href="{{ path('dap_client_detail', { 'name': nameUrl, 'dapID': record.dapID}) }}">{{ fullRecord.title.displayTitle }}</a>
+      {% endif %}
+    </h4>
+    <div class="card-media__desc">
+      {% if fullRecord.creator is defined and fullRecord.creator is not null %}
+      <div class="metadata is-wide-right">
+        <h6 class="metadata__title">Creator</h6>
+        <div class="metadata__desc">
+          {{ fullRecord.creator }}
+        </div>
+      </div>
+      {% endif %}
+      
+      {% if (fullRecord.dateCreated is defined and fullRecord.dateCreated is not null) %}
+      {% if (fullRecord.dateCreated.displayDate is defined and fullRecord.dateCreated.displayDate is not null) or
+      (fullRecord.dateCreated.isoDate is defined and fullRecord.dateCreated.isoDate is not null) %}
+      <div class="metadata is-wide-right">
+        <h6 class="metadata__title">Date</h6>
+        <div class="metadata__desc">
+          {% if fullRecord.dateCreated.displayDate is defined %}
+          {{ fullRecord.dateCreated.displayDate }}
+          {% elseif fullRecord.dateCreated.isoDate is defined %}
+          {{ fullRecord.dateCreated.isoDate }}
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
+      
+      {% if fullRecord.format is defined and fullRecord.format|length > 0 %}
+        <div class="metadata is-wide-right">
+          <h6 class="metadata__title">Media Format</h6>
+          <div class="metadata__desc">
+            {% for format in fullRecord.format %}
+              {{ format }}
+              {% if not loop.last %}
+                ,
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      {% if fullRecord.locationCreated is defined and fullRecord.locationCreated is not null %}
+        {% if (fullRecord.locationCreated.address is defined and fullRecord.locationCreated.address is not null) or
+          (fullRecord.locationCreated.addressLocality is defined and fullRecord.locationCreated.addressLocality is not null) or
+          (fullRecord.locationCreated.addressRegion is defined and fullRecord.locationCreated.addressRegion is not null) or
+          (fullRecord.locationCreated.locationDescriptor is defined and fullRecord.locationCreated.locationDescriptor is not null) %}
+          <div class="metadata is-wide-right">
+            <h6 class="metadata__title">Location</h6>
+            <div class="metadata__desc">
+              {% if fullRecord.locationCreated.address is defined %}{{ fullRecord.locationCreated.address }}{% endif %}
+              {% if fullRecord.locationCreated.addressLocality is defined %}{{ fullRecord.locationCreated.addressLocality }}{% endif %}
+              {% if fullRecord.locationCreated.addressRegion %}{{ fullRecord.locationCreated.addressRegion }}{% endif %}
+              {% if fullRecord.locationCreated.locationDescriptor %}{{ fullRecord.locationCreated.locationDescriptor }}{% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
+      {% if fullRecord.folgerDisplayIdentifier is defined and fullRecord.folgerDisplayIdentifier is not null %}
+        <div class="metadata is-wide-right">
+          <h6 class="metadata__title">Reference ID</h6>
+          <div class="metadata__desc">{{ fullRecord.folgerDisplayIdentifier }}</div>
+        </div>
+      {% endif %}
+      {# <div class="metadata is-wide-right">
+        <h6 class="metadata__title">
+          Your Folders
+        </h6>
+        <div class="metadata__desc">
+          <a href="#">Translations,</a>
+          <a href="#">Murder Mystery</a>
+        </div>
+      </div> #}
+    </div>
+    {% if viewPublicFolder %}
+      {% if record.notes is defined and record.notes is not empty %}
+        <div class="note-form">
+          <div class="note-form__inner">
+            <p class="note-form__note u-pre-wrap"><strong class="font-weight-bold">{{username|upper }}</strong>&nbsp;&nbsp;{{ record.notes }}</p>
+          </div>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="note-form" data-note>
+        <form data-note-form class="note-form__inner" class="note-form__inner" action="{{path('dap_myshelf_shelfrecord', {'dapid': record.dapID, 'format': 'json' })}}"
+          method="POST">
+          <p class="note-form__note u-pre-wrap{% if record.notes is empty %} d-none{% endif %}">{{ record.notes }}</p>
+          <textarea data-note-input class="note-form__note u-pre-wrap{% if record.notes is not empty %} d-none{% endif %}" name="notes" data-autoresize rows="1" placeholder="Add an optional note">{{record.notes}}</textarea>
+          <div class="note-form__actions {% if record.notes is not empty %} is-active {% endif %}" data-note-actions>
+            <div class="{% if record.notes is empty %} d-none {% endif %}">
+              <button type="button" data-note-actions-edit>EDIT</button><span class="d-inline-block u-mr-2 u-ml-2">|</span>
+              <a data-note-actions-delete href="{{ path('dap_myshelf_shelfrecord', {'dapid': record.dapID, 'notes': '', 'format': 'json'}) }}">DELETE NOTE</a>
+            </div>
+            <div class="{% if record.notes is not empty %} d-none {% endif %}">
+              <button type="submit">SAVE</button><span class="d-inline-block u-mr-2 u-ml-2">|</span>
+              <button type="button" data-note-actions-discard>DON’T SAVE</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+
+
+  </div>
+</article>
